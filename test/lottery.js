@@ -271,4 +271,29 @@ describe('***LOTTERY***', () => {
       });
     });
   });
+
+  describe('------NOT FOUND------', () => {
+    /*
+     * Test the /GET/winningnumbers route
+     */
+    describe('/GET Get for route not found', () => {
+      it('it should return an error for route not found', (done) => {
+        chai
+          .request(app)
+          .get('/api/v1/lottery/someunkownroute')
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            res.body.should.have.property('success').eql(false);
+            res.body.should.have
+              .property('error')
+              .eql('Could not find this route');
+            done();
+          });
+      });
+    });
+  });
 });

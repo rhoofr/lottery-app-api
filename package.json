@@ -5,7 +5,6 @@
   "main": "server.js",
   "scripts": {
     "test": "mocha --timeout 10000 --exit",
-    "test2": "SET NODE_ENV=test & mocha --timeout 10000 --exit",
     "start": "SET NODE_ENV=production & node server",
     "dev": "nodemon server",
     "debug": "ndb server.js",

@@ -13,6 +13,7 @@ const hpp = require('hpp');
 const cors = require('cors');
 const errorHandler = require('./middleware/error');
 const connectDB = require('./config/db');
+const HttpError = require('./models/http-error');
 
 const { getCurrentDateTimeLocal } = require('./utils/datetime');
 
@@ -71,6 +72,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routers
 app.use('/api/v1/lottery', lottery);
+
+// Handle any routes not already handled
+app.use((req, res, next) => {
+  const error = new HttpError('Could not find this route', 404);
+  return next(error);
+});
 
 // Set up error handler
 app.use(errorHandler);
