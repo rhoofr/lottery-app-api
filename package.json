@@ -1,0 +1,52 @@
+{
+  "name": "lottery-api",
+  "version": "1.0.0",
+  "description": "Starting files for node app",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha --timeout 10000 --exit",
+    "test2": "SET NODE_ENV=test & mocha --timeout 10000 --exit",
+    "start": "SET NODE_ENV=production & node server",
+    "dev": "nodemon server",
+    "debug": "ndb server.js",
+    "debug:seeder": "ndb seeder.js -i"
+  },
+  "keywords": [],
+  "author": "HoofSoft",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bcryptjs": "^2.4.3",
+    "colors": "^1.4.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-mongo-sanitize": "^2.0.2",
+    "express-rate-limit": "^5.2.3",
+    "helmet": "^4.4.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.11.12",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.4.17",
+    "slugify": "^1.4.6",
+    "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^7.18.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1"
+  },
+  "engines": {
+    "node": ">=10.6.0"
+  }
+}
