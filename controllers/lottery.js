@@ -7,17 +7,22 @@ const asyncHandler = require('../middleware/async');
 const {
   getWinningNumbers,
   calculateMegaWinnings,
-  calculatePBWinnings
+  calculatePBWinnings,
+  winningNumbersForGameAndDateRange,
+  checkTicketAgainstWinningNumbers
 } = require('../common/winningNumbers');
 const {
   upcomingRefreshRequired,
   refreshUpcoming
 } = require('../common/upcoming');
-const { checkTimeForNewticket } = require('../common/playedNumbers');
+const {
+  checkTimeForNewticket,
+  numbersPlayedById
+} = require('../common/playedNumbers');
 const { getResultsFromDb } = require('../common/results');
 const { getDifferenceInDays } = require('../utils/datetime');
 const { allNumbersValid, datesValidForGame } = require('../utils/validations');
-const PlayedNumbers = require('../models/PlayedNumber');
+const PlayedNumber = require('../models/PlayedNumber');
 const WinningNumbers = require('../models/WinningNumber');
 const UpcomingDrawing = require('../models/UpcomingDrawing');
 const Result = require('../models/Result');
@@ -93,7 +98,7 @@ exports.createNumbersPlayed = asyncHandler(async (req, res, next) => {
   }
 
   try {
-    playedNumbers = await PlayedNumbers.create({
+    playedNumbers = await PlayedNumber.create({
       game,
       first,
       second,
@@ -127,7 +132,7 @@ exports.retrieveNumbersPlayed = asyncHandler(async (req, res, next) => {
   let results;
 
   try {
-    results = await PlayedNumbers.find({}).sort({ endDate: -1 });
+    results = await PlayedNumber.find({}).sort({ endDate: -1 });
   } catch (error) {
     console.log(`retrieveNumbersPlayed error: ${error}`);
     return res.status(500).json({
@@ -144,27 +149,77 @@ exports.retrieveNumbersPlayed = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * @desc      Fetch Winning Numbers for a draw date (Not sure at this point if I need this)
- * @route     Get /api/v1/lottery/fetchwinningnumbers
+ * @desc      Retrieve specific Numbers Played by Id from the DB.
+ * @route     GET /api/v1/lottery/numbersplayed/:id
  * @access    Public
  */
-exports.fetchWinningNumbers = asyncHandler(async (req, res) => {
-  const { drawDate, game } = req.body;
+exports.getNumbersPlayedById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  let playedNumbers;
 
   try {
-    const returnObj = await getWinningNumbers(drawDate, game);
-
-    return res.status(200).json({
-      success: true,
-      data: returnObj
-    });
+    playedNumbers = await numbersPlayedById(id);
+    if (Object.keys(playedNumbers).length > 0) {
+      return res.status(200).json({
+        success: true,
+        playedNumbers
+      });
+    }
   } catch (error) {
-    console.log(`fetchWinningNumbers error: ${error}`);
+    console.log(`getNumbersPlayedById error: ${error}`);
     return res.status(500).json({
       success: false,
       message: error
     });
   }
+
+  return res.status(404).json({
+    success: false,
+    result: {}
+  });
+});
+
+/**
+ * @desc      Retrieve specific Numbers Played and Winning Numbers by Id from the DB.
+ * @route     GET /api/v1/lottery/drawsforticket/:id
+ * @access    Public
+ */
+exports.getDrawsForTicket = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  let playedNumbers;
+
+  try {
+    playedNumbers = await numbersPlayedById(id);
+    if (Object.keys(playedNumbers).length > 0) {
+      const winningNumbers = await winningNumbersForGameAndDateRange(
+        playedNumbers.game,
+        playedNumbers.startDate,
+        playedNumbers.endDate
+      );
+
+      const results = await checkTicketAgainstWinningNumbers(
+        playedNumbers,
+        winningNumbers
+      );
+
+      return res.status(200).json({
+        success: true,
+        length: results.length,
+        results
+      });
+    }
+  } catch (error) {
+    console.log(`getDrawsForTicket error: ${error}`);
+    return res.status(500).json({
+      success: false,
+      message: error
+    });
+  }
+
+  return res.status(404).json({
+    success: false,
+    result: {}
+  });
 });
 
 /**
@@ -297,7 +352,7 @@ exports.checkResults = asyncHandler(async (req, res, next) => {
   let daysDiffence = 0;
   let numbersPlayedId;
 
-  const numbersPlayedToCheck = await PlayedNumbers.aggregate([
+  const numbersPlayedToCheck = await PlayedNumber.aggregate([
     { $match: { allResultsChecked: false } },
     { $sort: { endDate: 1 } }
   ]);
@@ -336,7 +391,7 @@ exports.checkResults = asyncHandler(async (req, res, next) => {
 
           // if we are at the last record then all results are checked.
           if (i === daysDiffence) {
-            await PlayedNumbers.findByIdAndUpdate(item._id, {
+            await PlayedNumber.findByIdAndUpdate(item._id, {
               allResultsChecked: true
             });
           }

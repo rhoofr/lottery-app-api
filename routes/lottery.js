@@ -2,7 +2,8 @@ const express = require('express');
 const {
   createNumbersPlayed,
   retrieveNumbersPlayed,
-  fetchWinningNumbers,
+  getNumbersPlayedById,
+  getDrawsForTicket,
   retrieveWinningNumbers,
   checkUpcoming,
   checkResults,
@@ -18,8 +19,11 @@ router.post('/numbersplayed', createNumbersPlayed);
 // /api/v1/lottery/numbersplayed
 router.get('/numbersplayed', retrieveNumbersPlayed);
 
-// /api/v1/lottery/fetchwinningnumbers
-router.get('/fetchwinningnumbers', fetchWinningNumbers);
+// /api/v1/lottery/numbersplayed/:id
+router.get('/numbersplayed/:id', getNumbersPlayedById);
+
+// /api/v1/lottery/numbersplayed/:id
+router.get('/drawsforticket/:id', getDrawsForTicket);
 
 // /api/v1/lottery/winningnumbers
 router.get('/winningnumbers', retrieveWinningNumbers);

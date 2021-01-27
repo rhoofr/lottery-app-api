@@ -1,6 +1,6 @@
 /* eslint-disable operator-linebreak */
 const { default: axios } = require('axios');
-const WinningNumbers = require('../models/WinningNumber');
+const WinningNumber = require('../models/WinningNumber');
 const Result = require('../models/Result');
 
 /**
@@ -70,7 +70,7 @@ exports.getWinningNumbers = async (drawDate, game) => {
 
   try {
     // First see if we already have the winning numbers for this date and game
-    const currResults = await WinningNumbers.find({ game, drawDate });
+    const currResults = await WinningNumber.find({ game, drawDate });
 
     if (currResults.length > 0) {
       return {
@@ -101,13 +101,13 @@ exports.getWinningNumbers = async (drawDate, game) => {
     const returnObj = parseResults(response.data[0], game);
 
     // Save to dB
-    const winningNumbers = new WinningNumbers(returnObj);
+    const winningNumbers = new WinningNumber(returnObj);
     await winningNumbers.save();
 
     return returnObj;
   } catch (error) {
-    console.log(`fetchWinningNumbers error: ${error}`);
-    throw new Error(`fetchWinningNumbers error: ${error}`);
+    console.log(`getWinningNumbers error: ${error}`);
+    throw new Error(`getWinningNumbers error: ${error}`);
   }
 };
 
@@ -249,4 +249,166 @@ exports.calculatePBWinnings = async (numsPlayed, pbResults) => {
   } catch (e) {
     throw new Error(e);
   }
+};
+
+/**
+ * @desc   Get all the winning numbers for a game and date range.
+ * @param {string} game - 'M'or 'P'.
+ * @param {date} startDate - Date to start search from.
+ * @param {date} endDate - Date to search to.
+ * @return {array} An array of the winning numbers for the date range.
+ */
+exports.winningNumbersForGameAndDateRange = async (
+  game,
+  startDate,
+  endDate
+) => {
+  try {
+    const winningNumbers = await WinningNumber.find({
+      game,
+      drawDate: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    }).sort({ drawDate: 1 });
+
+    if (winningNumbers.length > 0) {
+      return winningNumbers;
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+
+  // In case nothing returned
+  return [];
+};
+
+/**
+ * @desc   Calculate for each drawing date which numbers matched and return array with results from each draw date.
+ * @param {object} playedNumbers - Numbers played.
+ * @param {array} winningNumbers - Array of winning numbers within the start and end dates of ticket.
+ * @return {array} Element for each draw date.
+ */
+exports.checkTicketAgainstWinningNumbers = async (
+  playedNumbers,
+  winningNumbers
+) => {
+  // const playedNumbers = {
+  //   allResultsChecked: false,
+  //   _id: '6009f7f2e038da1348bfd0f8',
+  //   game: 'M',
+  //   first: 10,
+  //   second: 26,
+  //   third: 48,
+  //   fourth: 57,
+  //   fifth: 66,
+  //   ball: 20,
+  //   startDate: '2021-01-08T05:00:00.000Z',
+  //   endDate: '2021-03-02T05:00:00.000Z',
+  //   createdAt: '2021-01-21T21:53:54.832Z',
+  //   __v: 0
+  // };
+  // const winningNumbers = [
+  //   {
+  //     _id: '6010a5dfdb8051436cd9a2a0',
+  //     first: 3,
+  //     second: 6,
+  //     third: 16,
+  //     fourth: 18,
+  //     fifth: 58,
+  //     ball: 11,
+  //     game: 'M',
+  //     drawDate: '2021-01-08T05:00:00.000Z',
+  //     createdAt: '2021-01-26T23:29:35.185Z',
+  //     __v: 0
+  //   }
+  // ];
+
+  const finalResult = [];
+  const playedNumbersArr = [
+    playedNumbers.first,
+    playedNumbers.second,
+    playedNumbers.third,
+    playedNumbers.fourth,
+    playedNumbers.fifth
+  ];
+
+  // finalResult.push({
+  //   game: playedNumbers.game,
+  //   first: playedNumbers.first,
+  //   second: playedNumbers.second,
+  //   third: playedNumbers.third,
+  //   fourth: playedNumbers.fourth,
+  //   fifth: playedNumbers.fifth,
+  //   ball: playedNumbers.ball,
+  //   startDate: playedNumbers.startDate,
+  //   endDate: playedNumbers.endDate
+  // });
+
+  for (let i = 0; i < winningNumbers.length; i++) {
+    let returnWinnings = 0;
+    const matchedNums = [];
+    const unmatchedNums = [];
+    const winningNums = [
+      winningNumbers[i].first,
+      winningNumbers[i].second,
+      winningNumbers[i].third,
+      winningNumbers[i].fourth,
+      winningNumbers[i].fifth
+    ];
+
+    if (playedNumbersArr.includes(winningNumbers[i].first)) {
+      matchedNums.push(winningNumbers[i].first);
+    } else {
+      unmatchedNums.push(winningNumbers[i].first);
+    }
+
+    if (playedNumbersArr.includes(winningNumbers[i].second)) {
+      matchedNums.push(winningNumbers[i].second);
+    } else {
+      unmatchedNums.push(winningNumbers[i].second);
+    }
+
+    if (playedNumbersArr.includes(winningNumbers[i].third)) {
+      matchedNums.push(winningNumbers[i].third);
+    } else {
+      unmatchedNums.push(winningNumbers[i].third);
+    }
+
+    if (playedNumbersArr.includes(winningNumbers[i].fourth)) {
+      matchedNums.push(winningNumbers[i].fourth);
+    } else {
+      unmatchedNums.push(winningNumbers[i].fourth);
+    }
+
+    if (playedNumbersArr.includes(winningNumbers[i].fifth)) {
+      matchedNums.push(winningNumbers[i].fifth);
+    } else {
+      unmatchedNums.push(winningNumbers[i].fifth);
+    }
+
+    const currentWinnings = await Result.find(
+      {
+        numbersPlayedId: playedNumbers._id,
+        drawDate: winningNumbers[i].drawDate
+      },
+      { _id: 0, currentWinnings: 1 }
+    );
+
+    if (!currentWinnings || currentWinnings.length < 1) {
+      returnWinnings = 0;
+    } else {
+      returnWinnings = currentWinnings[0].currentWinnings;
+    }
+
+    finalResult.push({
+      game: playedNumbers.game,
+      drawDate: winningNumbers[i].drawDate,
+      winningNums,
+      matchedNums,
+      unmatchedNums,
+      ball: winningNumbers[i].ball,
+      ballMatched: playedNumbers.ball === winningNumbers[i].ball,
+      currentWinnings: returnWinnings
+    });
+  }
+
+  return finalResult;
 };
