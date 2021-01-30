@@ -61,7 +61,12 @@ const refreshUpcoming = async (pb = true, mega = true) => {
 
         await upcomingPB.save();
       } else {
-        console.log(`refreshUpcoming error code: ${pbResults.data.error}`);
+        console.log(
+          `PB Upcoming API call - refreshUpcoming error code: ${pbResults.data.error}`
+        );
+        throw new Error(
+          `PB Upcoming API call - refreshUpcoming error code: ${pbResults.data.error}`
+        );
       }
     }
 
@@ -80,25 +85,29 @@ const refreshUpcoming = async (pb = true, mega = true) => {
 
         await upcomingMega.save();
       } else {
-        console.log(`refreshUpcoming error code: ${megaResults.data.error}`);
+        console.log(
+          `Mega Upcoming API call - refreshUpcoming error code: ${megaResults.data.error}`
+        );
+        throw new Error(
+          `Mega Upcoming API call - refreshUpcoming error code: ${megaResults.data.error}`
+        );
       }
     }
   } catch (error) {
-    console.log(`refreshUpcoming error: ${error}`);
-    throw new Error(`refreshUpcoming error: ${error}`);
+    throw new Error(`${error}`);
   }
 
   // NOTE: next two strictly for testing - MUST REMOVE!!!
-  upcomingPB = new UpcomingDrawing({
-    game: 'P',
-    currentJackpot: '40000000',
-    nextDrawDate: new Date('2016-06-03')
-  });
-  upcomingMega = new UpcomingDrawing({
-    game: 'M',
-    currentJackpot: '790000000',
-    nextDrawDate: new Date('2016-06-03')
-  });
+  // upcomingPB = new UpcomingDrawing({
+  //   game: 'P',
+  //   currentJackpot: '40000000',
+  //   nextDrawDate: new Date('2016-06-03')
+  // });
+  // upcomingMega = new UpcomingDrawing({
+  //   game: 'M',
+  //   currentJackpot: '790000000',
+  //   nextDrawDate: new Date('2016-06-03')
+  // });
 
   return [
     {

@@ -33,6 +33,8 @@ exports.getCurrentDateTimeLocal = () => {
  * @return {Number} Number of days between dates (including the dates themselves)
  */
 exports.getDifferenceInDays = (firstDt, secondDt) => {
+  if (firstDt.valueOf() > secondDt.valueOf()) return 0;
+
   // Doing this to take out the time component
   let currentDate = firstDt.getDate();
   let currentMonth = firstDt.getMonth();

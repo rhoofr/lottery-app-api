@@ -1,14 +1,15 @@
 const express = require('express');
+const { retrieveWinningNumbers } = require('../controllers/winningNumbers');
+const { checkUpcoming } = require('../controllers/upcomingDrawings');
+const { checkResults, getResults } = require('../controllers/results');
 const {
   createNumbersPlayed,
   retrieveNumbersPlayed,
   getNumbersPlayedById,
-  getDrawsForTicket,
-  retrieveWinningNumbers,
-  checkUpcoming,
-  checkResults,
-  getResults
-} = require('../controllers/lottery');
+  deleteNumbersPlayedById,
+  updateNumbersPlayed,
+  getDrawsForTicket
+} = require('../controllers/numbersPlayed');
 const { seed, regexTest } = require('../controllers/seeder');
 
 const router = express.Router();
@@ -21,6 +22,12 @@ router.get('/numbersplayed', retrieveNumbersPlayed);
 
 // /api/v1/lottery/numbersplayed/:id
 router.get('/numbersplayed/:id', getNumbersPlayedById);
+
+// /api/v1/lottery/numbersplayed/:id
+router.patch('/numbersplayed/:id', updateNumbersPlayed);
+
+// /api/v1/lottery/numbersplayed/:id
+router.delete('/numbersplayed/:id', deleteNumbersPlayedById);
 
 // /api/v1/lottery/numbersplayed/:id
 router.get('/drawsforticket/:id', getDrawsForTicket);

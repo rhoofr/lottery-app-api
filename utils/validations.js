@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const isValidDate = (d) => d instanceof Date && !Number.isNaN(d);
 
 exports.allNumbersValid = (nbrs) => {
@@ -37,3 +39,5 @@ exports.datesValidForGame = (game, startDate, endDate) => {
 
   return true;
 };
+
+exports.checkIdIsValid = (id) => mongoose.Types.ObjectId.isValid(id);
