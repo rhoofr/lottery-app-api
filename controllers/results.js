@@ -76,9 +76,6 @@ exports.checkResults = asyncHandler(async (req, res, next) => {
         // eslint-disable-next-line no-restricted-syntax
         for (const result of results) {
           if (result.drawDate.valueOf() === dtToCheck.valueOf()) {
-            console.log(
-              'checkResults - found=true. Already have results for this date.'
-            );
             found = true;
             break;
           }

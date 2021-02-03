@@ -23,7 +23,7 @@ exports.checkUpcoming = asyncHandler(async (req, res, next) => {
     nextDDPb = await UpcomingDrawing.find(
       { game: 'P' },
       {
-        _id: 0,
+        _id: 1,
         game: 1,
         nextDrawDate: 1,
         currentJackpot: 1
@@ -42,7 +42,7 @@ exports.checkUpcoming = asyncHandler(async (req, res, next) => {
     nextDDMega = await UpcomingDrawing.find(
       { game: 'M' },
       {
-        _id: 0,
+        _id: 1,
         game: 1,
         nextDrawDate: 1,
         currentJackpot: 1
@@ -71,7 +71,7 @@ exports.checkUpcoming = asyncHandler(async (req, res, next) => {
   if (!needPb) {
     // From DB
     pbReturn._id = nextDDPb[0]._doc._id;
-    pbReturn.game = 'P';
+    pbReturn.game = 'PowerBall';
     pbReturn.currentJackpot = nextDDPb[0]._doc.currentJackpot;
     pbReturn.nextDrawDate = nextDDPb[0]._doc.nextDrawDate;
   } else {
@@ -82,7 +82,7 @@ exports.checkUpcoming = asyncHandler(async (req, res, next) => {
   if (!needMega) {
     // From DB
     megaReturn._id = nextDDMega[0]._doc._id;
-    megaReturn.game = 'M';
+    megaReturn.game = 'Mega Millions';
     megaReturn.currentJackpot = nextDDMega[0]._doc.currentJackpot;
     megaReturn.nextDrawDate = nextDDMega[0]._doc.nextDrawDate;
   } else {

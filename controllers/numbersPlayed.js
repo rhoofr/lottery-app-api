@@ -239,6 +239,7 @@ exports.updateNumbersPlayed = asyncHandler(async (req, res, next) => {
   }
 
   playedNumber = await PlayedNumber.findByIdAndUpdate(id, req.body, {
+    new: true,
     runValidators: true
   });
 

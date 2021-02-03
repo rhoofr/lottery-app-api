@@ -1,5 +1,6 @@
 const { default: axios } = require('axios');
 const UpcomingDrawing = require('../models/UpcomingDrawing');
+const { getCorrectedDateFromUTC } = require('../utils/datetime');
 
 /**
  * @desc  Need to update the upcomingDrawings once a month to keep app key from getting locked out.
@@ -56,7 +57,7 @@ const refreshUpcoming = async (pb = true, mega = true) => {
         upcomingPB = new UpcomingDrawing({
           game: 'P',
           currentJackpot: pbResults.data.jackpot,
-          nextDrawDate: new Date(pbResults.data.next_draw)
+          nextDrawDate: getCorrectedDateFromUTC(pbResults.data.next_draw)
         });
 
         await upcomingPB.save();
@@ -72,6 +73,7 @@ const refreshUpcoming = async (pb = true, mega = true) => {
 
     if (mega) {
       // Now Mega
+      console.log('Getting Upcoming Drawing numbers from API for Mega');
       URI = `${process.env.MAGAYO_URI}?api_key=${process.env.MAGAYO_API_KEY}&game=us_mega_millions`; // Mega
       megaResults = await axios.get(URI);
 
@@ -80,7 +82,7 @@ const refreshUpcoming = async (pb = true, mega = true) => {
         upcomingMega = new UpcomingDrawing({
           game: 'M',
           currentJackpot: megaResults.data.jackpot,
-          nextDrawDate: new Date(megaResults.data.next_draw)
+          nextDrawDate: getCorrectedDateFromUTC(megaResults.data.next_draw)
         });
 
         await upcomingMega.save();

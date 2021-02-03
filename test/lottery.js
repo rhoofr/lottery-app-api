@@ -13,6 +13,7 @@ const app = require('../server');
 const should = chai.should();
 // const { expect } = chai;
 chai.use(chaiHttp);
+let newId = '';
 
 describe('***LOTTERY***', () => {
   describe('------RESULTS------', () => {
@@ -145,9 +146,137 @@ describe('***LOTTERY***', () => {
             if (err) {
               console.log(err);
             }
+            newId = res.body.results._id;
             res.should.have.status(201);
             res.body.should.be.a('object');
             res.body.results.should.have.property('allResultsChecked');
+            done();
+          });
+      });
+    });
+
+    /*
+     * Test the /GET/numbersplayed/:id route
+     */
+    describe('/GET Get a specific set of playednumbers', () => {
+      it('it should Get a specific set of playednumbers', (done) => {
+        chai
+          .request(app)
+          .get(`/api/v1/lottery/numbersplayed/${newId}`)
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('success').eql(true);
+            res.body.playedNumbers.should.be.a('object');
+            done();
+          });
+      });
+    });
+
+    /*
+     * Test the /GET/numbersplayed/:id route
+     */
+    describe('/GET Get a specific set of playednumbers with INVALID ID', () => {
+      it('it NOT should Get a specific set of playednumbers with an INVALID ID', (done) => {
+        chai
+          .request(app)
+          .get('/api/v1/lottery/numbersplayed/6014a6af531b3910f8b2c58')
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+            res.should.have.status(400);
+            res.body.should.be.a('object');
+            res.body.should.have.property('success').eql(false);
+            res.body.should.have
+              .property('error')
+              .eql('Invalid Id for Played Numbers');
+            done();
+          });
+      });
+    });
+
+    /*
+     * Test the /PATCH/numbersplayed/:id route
+     */
+    describe('/PATCH Get a specific set of playednumbers', () => {
+      const body = {
+        game: 'P',
+        first: 1,
+        second: 2,
+        third: 3,
+        fourth: 4,
+        fifth: 5,
+        ball: 6,
+        startDate: '01-30-2021',
+        endDate: '1-30-2021'
+      };
+      it('it should Update a specific set of playednumbers', (done) => {
+        chai
+          .request(app)
+          .patch(`/api/v1/lottery/numbersplayed/${newId}`)
+          .send(body)
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('success').eql(true);
+            res.body.results.should.have.property('game').eql('P');
+            res.body.results.should.have
+              .property('startDate')
+              .eql('2021-01-30T05:00:00.000Z');
+            res.body.results.should.have
+              .property('endDate')
+              .eql('2021-01-30T05:00:00.000Z');
+            done();
+          });
+      });
+    });
+
+    /*
+     * Test the /GET/drawsforticket/:id route
+     */
+    describe('/GET results and draws remaining for a specific set of playednumbers', () => {
+      it('it should get results and draws remaining specific set of playednumbers', (done) => {
+        chai
+          .request(app)
+          .get(`/api/v1/lottery/drawsforticket/${newId}`)
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('success').eql(true);
+            res.body.length.should.be.a('number');
+            res.body.results.should.be.a('array');
+            res.body.remaining.should.be.a('number');
+            done();
+          });
+      });
+    });
+
+    /*
+     * Test the /DELETE/numbersplayed/:id route
+     */
+    describe('/DELETE a specific set of playednumbers', () => {
+      it('it should delete a specific set of playednumbers', (done) => {
+        chai
+          .request(app)
+          .delete(`/api/v1/lottery/numbersplayed/${newId}`)
+          .end((err, res) => {
+            if (err) {
+              console.log(err);
+            }
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('success').eql(true);
+            res.body.should.have.property('message').eql('Deleted ticket.');
             done();
           });
       });
@@ -252,6 +381,8 @@ describe('***LOTTERY***', () => {
     /*
      * Test the /GET/checkupcoming route
      */
+    // NOTE: Skipping because of the limited calls I can make.
+    /*
     describe('/GET Get all lottery checkupcoming', () => {
       it('it should GET all winning numbers from the db', (done) => {
         chai
@@ -270,6 +401,7 @@ describe('***LOTTERY***', () => {
           });
       });
     });
+    */
   });
 
   describe('------NOT FOUND------', () => {

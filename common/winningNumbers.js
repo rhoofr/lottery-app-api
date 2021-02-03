@@ -330,18 +330,6 @@ exports.checkTicketAgainstWinningNumbers = async (
     playedNumbers.fifth
   ];
 
-  // finalResult.push({
-  //   game: playedNumbers.game,
-  //   first: playedNumbers.first,
-  //   second: playedNumbers.second,
-  //   third: playedNumbers.third,
-  //   fourth: playedNumbers.fourth,
-  //   fifth: playedNumbers.fifth,
-  //   ball: playedNumbers.ball,
-  //   startDate: playedNumbers.startDate,
-  //   endDate: playedNumbers.endDate
-  // });
-
   for (let i = 0; i < winningNumbers.length; i++) {
     let returnWinnings = 0;
     const matchedNums = [];

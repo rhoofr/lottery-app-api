@@ -53,3 +53,15 @@ exports.getDifferenceInDays = (firstDt, secondDt) => {
   if (diffDays > 0) diffDays += 1; // Add one so we include the starting and ending day
   return diffDays;
 };
+
+/**
+ * Returns a date basically adding one day so that it shows up correctly on local timezone.
+ * @param  {String} date in string format, Ie. '2021-02-03'
+ * @return {Date} date object corrected for UTC 00:00:00 being the day before
+ */
+exports.getCorrectedDateFromUTC = (dateStr) => {
+  let dt = new Date(dateStr);
+  dt = dt.setDate(dt.getDate() + 1);
+
+  return new Date(dt);
+};
