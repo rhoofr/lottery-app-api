@@ -1,4 +1,4 @@
-# HoofSoft Lottery App API
+# Lottery App API
 
 > Lottery App API - NodeJs/Express backend for the lottery app.
 
@@ -65,6 +65,6 @@ Restful backend
 
 ## License
 
-> You can check out the full license [here](https://github.com/rhoofr/lottery-app-api/LICENSE)
+> You can check out the full license [here](https://github.com/rhoofr/lottery-app-api/blob/main/LICENSE)
 
 This project is licensed under the terms of the **MIT** license.
