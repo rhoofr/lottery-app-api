@@ -29,7 +29,7 @@ router.patch('/numbersplayed/:id', updateNumbersPlayed);
 // /api/v1/lottery/numbersplayed/:id
 router.delete('/numbersplayed/:id', deleteNumbersPlayedById);
 
-// /api/v1/lottery/numbersplayed/:id
+// /api/v1/lottery/drawsforticket/:id
 router.get('/drawsforticket/:id', getDrawsForTicket);
 
 // /api/v1/lottery/winningnumbers

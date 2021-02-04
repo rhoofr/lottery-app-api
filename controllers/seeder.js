@@ -40,7 +40,7 @@ exports.seed = asyncHandler(async (req, res, next) => {
 
   const ids = [];
   try {
-    /* THESE TWO ARE DONE
+    /* THESE THREE ARE DONE
     // Convert the date strings to dates
     for (let playedNumber of playedNumbers) {
       playedNumber.startDate = new Date(playedNumber.startDate);
@@ -59,16 +59,16 @@ exports.seed = asyncHandler(async (req, res, next) => {
       result.numbersPlayedId = ids[idx];
       const savedResult = await Result.create(result);
     }
-    */
 
     for (let winningNumber of winningNumbers) {
       winningNumber.drawDate = new Date(winningNumber.drawDate);
       const savedResult = await WinningNumbers.create(winningNumber);
     }
+    */
 
     // console.log(ids);
     // const numbers = await PlayedNumber.create(playedNumbers);
-    console.log(`Data Imported...`.green.inverse);
+    console.log('Data Imported...'.green.inverse);
   } catch (err) {
     console.error(err);
   }

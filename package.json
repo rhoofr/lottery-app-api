@@ -1,7 +1,7 @@
 {
   "name": "lottery-api",
-  "version": "1.0.0",
-  "description": "Starting files for node app",
+  "version": "0.1.0",
+  "description": "API for the lottery app",
   "main": "server.js",
   "scripts": {
     "test": "mocha --timeout 10000 --exit",
@@ -12,7 +12,7 @@
   },
   "keywords": [],
   "author": "HoofSoft",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
     "colors": "^1.4.0",
