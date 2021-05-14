@@ -86,7 +86,10 @@ exports.checkResults = asyncHandler(async (req, res, next) => {
           const resultFromApi = await getWinningNumbers(dtToCheck, game);
 
           // if we are at the last record then all results are checked.
-          if (i === daysDifference) {
+          if (
+            i === daysDifference ||
+            dtToCheck.valueOf() === endDate.valueOf()
+          ) {
             await PlayedNumber.findByIdAndUpdate(item._id, {
               allResultsChecked: true
             });
@@ -133,7 +136,13 @@ exports.getResults = asyncHandler(async (req, res, next) => {
   try {
     // Need to keep upcomingDrawings refreshed so our api key does not get locked.
     if (await upcomingRefreshRequired()) {
-      await refreshUpcoming();
+      try {
+        await refreshUpcoming();
+      } catch (error) {
+        console.error(
+          'Got error in getResults calling refreshUpcoming. Continuing...'
+        );
+      }
     }
 
     // Check if new ticket is required
